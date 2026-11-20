@@ -7,7 +7,7 @@ const blank = () => ({
   appName: '', primaryUser: '', approach: '', features: [], customFeature: '', realData: '',
   gameIdea: '', gameMode: '', playMode: '', elements: [], loopAct: '', loopReward: '', loopNext: '', realLink: '',
   techMode: '', core: [], libs: [], device: '', access: [], mood: '', moodOwn: '', success: '', extra: '',
-  draftBase: '', editedPrompt: '', review: {}, revWhat: '', revTo: '', revWhy: '',
+  draftBase: '', editedPrompt: '', prevEdited: '', review: {}, revWhat: '', revTo: '', revWhy: '',
   fixType: 'bug', fixA: '', fixB: '', tested: '', nextFix: ''
 });
 const KEY = 'life-prompt-lab-v1';
@@ -303,10 +303,14 @@ function runSteps() {
 function renderStep4() {
   const gen = plain(buildPrompt());
   if (!S.editedPrompt || S.editedPrompt === S.draftBase) { S.draftBase = gen; S.editedPrompt = gen; }
-  const stale = gen !== S.draftBase;
+  else if (gen !== S.draftBase) {
+    /* 앞 단계 내용이 바뀌면 새 초안을 먼저 보여 주고, 전에 고친 프롬프트는 따로 보관합니다. */
+    S.prevEdited = S.editedPrompt; S.draftBase = gen; S.editedPrompt = gen;
+  }
+  const stale = !!T(S.prevEdited);
   const miss = checks().filter(x => !x.ok);
   return '<div class="sec-head"><h2>초안을 직접 고쳐 내 프롬프트로 만들어요</h2><p>지금 프롬프트는 내가 고른 내용으로 자동으로 만든 초안이에요. 한 줄씩 소리 내어 읽고, 내 문제에 맞지 않거나 흐릿한 부분을 직접 고치세요. 안전 규칙은 복사할 때 자동으로 붙어요.</p></div>' +
-  (stale ? '<div class="panel stale"><h3>앞 단계 내용이 바뀌었어요</h3><p>내가 고친 프롬프트는 그대로 두었어요. 바뀐 내용을 보고 필요한 부분을 직접 옮기거나, 새 초안으로 다시 시작하세요.</p><div class="diff">' + diffHtml(diffLines(S.draftBase, gen)) + '</div><div class="chips"><button type="button" class="btn" id="staleKeep">내가 고친 것 유지하기</button><button type="button" class="btn quiet" id="staleRestart" data-restart="1" data-label="새 초안으로 다시 시작">새 초안으로 다시 시작</button></div></div>' : '') +
+  (stale ? '<div class="panel stale"><h3>앞 단계 내용으로 새 초안을 만들었어요</h3><p>앱 설계에서 바꾼 내용이 아래 “내 프롬프트”에 반영됐어요. 전에 고친 프롬프트는 따로 보관했으니, 필요한 문장은 아래에서 복사해 옮기세요.</p><details><summary>전에 고친 프롬프트 보기</summary><pre class="promptbox darkbox" tabindex="0">' + esc(S.prevEdited) + '</pre></details><div class="chips"><button type="button" class="btn" id="staleOk">새 초안으로 계속하기</button><button type="button" class="btn quiet" id="staleRestore">전에 고친 프롬프트로 되돌리기</button></div></div>' : '') +
   (miss.length ? '<ul class="notes">' + miss.map(x => '<li>' + esc(x.t) + ' 칸이 비어 있어요. <button type="button" class="linkbtn" data-go="' + x.step + '">채우러 가기</button></li>').join('') + '</ul>' : '') +
   '<div class="revgrid"><div class="promptcard"><div class="promptbar"><label for="promptEditor"><b>내 프롬프트</b></label><span class="count" id="edCount"></span><button type="button" class="btn quiet" id="revertBtn" data-restart="1" data-label="자동 초안으로 되돌리기">자동 초안으로 되돌리기</button></div><textarea class="promptedit" id="promptEditor" data-bind="editedPrompt" spellcheck="false">' + esc(S.editedPrompt) + '</textarea>' +
   '<details class="rules"><summary>자동으로 붙는 안전 규칙 보기</summary><pre class="promptbox" id="rulesBox" tabindex="0"></pre></details></div>' +
@@ -446,7 +450,8 @@ document.addEventListener('click', e => {
     return;
   }
   if (b.dataset.rev) { S.review[b.dataset.rev] = S.review[b.dataset.rev] === b.dataset.val ? '' : b.dataset.val; render(true); return; }
-  if (b.id === 'staleKeep') { S.draftBase = plain(buildPrompt()); render(); return; }
+  if (b.id === 'staleOk') { S.prevEdited = ''; render(true); return; }
+  if (b.id === 'staleRestore') { S.editedPrompt = S.prevEdited; S.prevEdited = ''; render(true); toast('전에 고친 프롬프트로 되돌렸어요.'); return; }
   if (b.dataset.restart) {
     if (armedBtn !== b.id) {
       armedBtn = b.id; b.textContent = '한 번 더 누르면 내가 고친 내용이 사라져요';
@@ -480,7 +485,11 @@ $('resetBtn').addEventListener('click', () => {
   clearTimeout(resetT); resetArmed = false; $('resetBtn').textContent = '처음부터 다시';
   S = blank(); render(); toast('입력 내용을 모두 지웠어요.');
 });
+let demoArmed = false, demoT;
 $('demoBtn').addEventListener('click', () => {
+  const hasWork = !!(S.problem || T(S.appName) || T(S.evidence) || T(S.editedPrompt));
+  if (hasWork && !demoArmed) { demoArmed = true; $('demoBtn').textContent = '한 번 더 누르면 내 내용이 예시로 바뀌어요'; demoT = setTimeout(() => { demoArmed = false; $('demoBtn').textContent = '예시로 채워 보기'; }, 4000); return; }
+  clearTimeout(demoT); demoArmed = false; $('demoBtn').textContent = '예시로 채워 보기';
   const p = PROBLEMS.find(x => x.id === DEMO.problem), g = p.games[DEMO.idea || 0];
   const d = Object.assign({}, DEMO); delete d.idea;
   S = Object.assign(blank(), d, {step: 4, features: DEMO.features.slice(), access: DEMO.access.slice(), core: DEMO.core.slice(), libs: DEMO.libs.slice(), gameIdea: g.n, gameMode: g.m, elements: g.e.slice(), loopAct: g.a, loopReward: g.r, loopNext: g.x, realLink: g.l});
