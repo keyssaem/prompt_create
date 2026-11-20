@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>생활 문제 프롬프트 제작소</title>
+<meta name="description" content="초등 고학년 학생이 생활 속 문제를 고르고 다듬어 AI 도구에 보낼 웹앱 제작 프롬프트를 완성하는 수업 도구">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow">초등 고학년 · AI로 웹앱 만들기</p>
+    <h1>생활 속 문제 해결<br><em>프롬프트</em> 제작소</h1>
+    <p class="hero-lead">우리 주변의 불편한 문제를 고르고, 직접 확인해 다듬고, 게임 같은 앱으로 설계해 AI에게 보낼 프롬프트를 완성해요.</p>
+  </div>
+  <svg class="hills" viewBox="0 0 1200 86" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="var(--hill-1)" d="M0 52 C150 20 300 20 450 46 S750 72 900 40 S1120 18 1200 34 V86 H0 Z"/>
+    <path fill="var(--hill-2)" d="M0 66 C180 44 360 48 540 64 S860 80 1020 56 S1160 50 1200 58 V86 H0 Z"/>
+    <path fill="var(--hill-3)" d="M0 78 C220 66 440 70 660 80 S1000 86 1200 74 V86 H0 Z"/>
+  </svg>
+</header>
+
+<nav class="wrap no-print" aria-label="제작 단계"><ol class="steps" id="steps"></ol></nav>
+
+<main class="wrap shell no-print" id="shell">
+  <div class="work" id="work"></div>
+  <aside id="side" aria-label="만들어지는 프롬프트">
+    <details class="ticket" id="ticket" open>
+      <summary>
+        <svg class="sprout" viewBox="0 0 54 30" aria-hidden="true">
+          <path d="M20 23 H34 L32 29 H22 Z" fill="#C9875A"/>
+          <path d="M27 23 V12" stroke="#5DAE6E" stroke-width="2" stroke-linecap="round"/>
+          <path d="M27 19 C22 18 20 15 20 13 C24 13 26 15 27 19 Z M27 17 C32 16 34 13 34 11 C30 11 28 13 27 17 Z" fill="#5DAE6E"/>
+          <g id="bloom"><circle cx="27" cy="6.5" r="3.4"/><circle cx="31.3" cy="9.6" r="3.4"/><circle cx="29.6" cy="14.5" r="3.4"/><circle cx="24.4" cy="14.5" r="3.4"/><circle cx="22.7" cy="9.6" r="3.4"/><circle cx="27" cy="11" r="2.6" fill="#FFD43B"/></g>
+        </svg>
+        <span><b>지금까지 만든 프롬프트</b><small id="meter"></small></span>
+      </summary>
+      <pre class="promptbox" id="sidePrompt" tabindex="0"></pre>
+    </details>
+  </aside>
+</main>
+
+<footer class="no-print">
+  <div class="wrap">
+    <details class="teacher">
+      <summary>선생님용 운영 안내</summary>
+      <div class="tablewrap"><table>
+        <thead><tr><th>차시 (40분)</th><th>학생 활동</th><th>끝났을 때 남는 것</th></tr></thead>
+        <tbody>
+          <tr><td>1차시</td><td>문제 카드 고르기, 친구·가족에게 물어보거나 관찰하기</td><td>직접 확인한 내용 기록</td></tr>
+          <tr><td>2차시</td><td>문제 문장 쓰기, 앱 이름·사용자·핵심 기능 정하기</td><td>문제 문장과 기능 목록</td></tr>
+          <tr><td>3차시</td><td>게임·기술 설계, 자동 초안 검토, 프롬프트 직접 고치기</td><td>학생이 고친 프롬프트와 고친 이유</td></tr>
+          <tr><td>4차시</td><td>AI 도구로 첫 버전 만들기, 직접 눌러 보기</td><td>동작하는 첫 버전</td></tr>
+          <tr><td>5차시</td><td>친구 테스트, 개선 프롬프트로 한 가지 고치기, 발표</td><td>개선된 앱과 발표 카드</td></tr>
+        </tbody>
+      </table></div>
+      <ul class="tnotes">
+        <li><b>AI 도구</b>: 학교에서 허용한 교육용 도구(예: 캔바 AI, 마주온 헬피챗)를 씁니다. 계정과 접속 방법은 학교 방침을 따르세요. 프롬프트는 특정 도구에 맞추지 않고, 결과를 <b>index.html 한 파일</b>로 받도록 짜여 있습니다.</li>
+        <li><b>개인정보</b>: 학생이 친구 이름, 전화번호, 주소, 사진을 입력하지 않도록 지도해 주세요. 이 사이트는 입력 내용을 이 기기의 브라우저에만 저장하고 어디에도 보내지 않습니다.</li>
+        <li><b>어려운 기술</b>: Three.js, MediaPipe, 카메라 기술은 AI 도구와 학교 기기에 따라 동작하지 않을 수 있습니다. 수업 전에 한 번 시험해 보세요.</li>
+        <li><b>활동지</b>: 아래 “활동지 인쇄” 버튼으로 학생이 입력한 내용을 A4로 출력할 수 있습니다. 빈칸은 손으로 쓰는 줄로 나옵니다.</li>
+        <li><b>문제 카드 고치기</b>: 문제 카드와 선택지는 <code>js/content.js</code> 한 파일에 모여 있습니다.</li>
+        <li>실과(소프트웨어·디지털)와 창의적 체험활동 시간에 연계해 운영할 수 있습니다.</li>
+      </ul>
+    </details>
+    <div class="footrow">
+      <span>추천 문제는 탐구를 시작하기 위한 예시입니다. 입력 내용은 이 기기의 브라우저에만 저장됩니다.</span>
+      <span class="chips">
+        <button class="btn quiet" type="button" data-print="1">활동지 인쇄</button>
+        <button class="btn quiet" type="button" id="demoBtn">예시로 채워 보기</button>
+        <button class="btn quiet" type="button" id="resetBtn">처음부터 다시</button>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast no-print" id="toast" role="status" aria-live="polite" hidden></div>
+<div id="printSheet" class="print-only"></div>
+
+<script src="js/content.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
